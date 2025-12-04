@@ -1,0 +1,46 @@
+{
+    "commands": {
+        "start_serial": {
+            "trigger": "-ss",
+            "usage": "-ss <PORT> <BAUDRATE>",
+            "min_args": 0,
+            "description": "Starts the serial port connection."
+        },
+        "read": {
+            "trigger": "-r",
+            "usage": "-r",
+            "min_args": 0,
+            "description": "Reads data coming from the port."
+        },
+        "write": {
+            "trigger": "-w",
+            "usage": "-w <message>",
+            "min_args": 1,
+            "description": "Writes data to the port."
+        },
+        "read_save": {
+            "trigger": "-rs",
+            "usage": "-rs <seconds> <name>",
+            "min_args": 2,
+            "description": "Reads and saves data for a specified duration."
+        },
+        "plot": {
+            "trigger": "-p",
+            "usage": "-p <save_ID>",
+            "min_args": 1,
+            "description": "Plots the saved data."
+        },
+        "help": {
+            "trigger": "-h",
+            "usage": "-h",
+            "min_args": 0,
+            "description": "Shows the help menu."
+        },
+        "close": {
+            "trigger": "-c",
+            "usage": "-c",
+            "min_args": 0,
+            "description": "Closes the connection and exits."
+        }
+    }
+}
