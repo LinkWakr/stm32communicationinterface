@@ -108,8 +108,8 @@ while(True):
 
     elif (command == COMMANDS["help"]["trigger"]):
         print("Help:")
-        for command in COMMANDS:
-            print(f"{COMMANDS[command]["trigger"]}: {COMMANDS[command]["description"]} Usage: {COMMANDS[command]["usage"]}")
+        for cmd in COMMANDS:
+            print(f"{COMMANDS[cmd]["trigger"]}: {COMMANDS[cmd]["description"]} Usage: {COMMANDS[cmd]["usage"]}")
 
     elif (command == COMMANDS["close"]["trigger"]): #close USAGE: -c
         ser.close()
