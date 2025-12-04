@@ -15,7 +15,9 @@ while(True):
     splited_code = code.split()
     command = splited_code[0]
     args = splited_code[1:]
-    
+    if (COMMANDS["minimum_args] <= len(args)):
+        continue
+
     if (command == COMMANDS["start_serial"]["trigger"]): # USAGE: -ss <PORT> <BOUNDRATE>
         if (len(args) == 0): 
             ser = serial.Serial(DEFAULT_PORT, DEFAULT_BAUNDRATE)
