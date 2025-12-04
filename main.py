@@ -15,7 +15,8 @@ while(True):
     splited_code = code.split()
     command = splited_code[0]
     args = splited_code[1:]
-    if (COMMANDS["min_args] <= len(args)):
+    if (COMMANDS[command]["min_args] <= len(args)):
+        print("Syntax Error. Usage: " + COMMANDS[command]["usage"])
         continue
 
     if (command == COMMANDS["start_serial"]["trigger"]): # USAGE: -ss <PORT> <BOUNDRATE>
