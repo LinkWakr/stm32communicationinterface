@@ -10,6 +10,11 @@ with open("config.json", "r") as f:
     CONFIG = json.load(f)
     COMMANDS = CONFIG["commands"]
 
+def find_command_name(trigger):
+    for cmd in COMMANDS:
+        if (cmd["trigger"] == trigger):
+            return cmd
+
 while(True):
     code = input("> ")
     splited_code = code.split()
