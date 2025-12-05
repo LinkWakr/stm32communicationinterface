@@ -1,4 +1,11 @@
 {
+    "default_port": "COM3",
+    "default_baundrate": 115200,
+    "package_settings": {
+        "prefix": "ff",
+        "subfix": "\r\n",
+        "length": 16
+    },
     "commands": {
         "start_serial": {
             "trigger": "-ss",
