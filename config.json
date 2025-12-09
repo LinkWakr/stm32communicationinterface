@@ -1,9 +1,9 @@
 {
     "default_port": "COM3",
-    "default_baundrate": 115200,
+    "default_baudrate": 115200,
     "package_settings": {
-        "prefix": "ff",
-        "subfix": "\r\n",
+        "header": "\u00ff",
+        "footer": "\r\n",
         "length": 16
     },
     "commands": {
@@ -17,13 +17,19 @@
             "trigger": "-r",
             "usage": "-r",
             "min_args": 0,
-            "description": "Reads data coming from the port."
+            "description": "Reads data coming from the port.",
+            "responses": {
+                "no_recent_package": "There aren't any packages read recently."
+            }
         },
         "write": {
             "trigger": "-w",
             "usage": "-w <message>",
             "min_args": 1,
-            "description": "Writes data to the port."
+            "description": "Writes data to the port.",
+            "responses": {
+                "written_succsessful": "Message written successfully!"
+            }
         },
         "read_save": {
             "trigger": "-rs",
