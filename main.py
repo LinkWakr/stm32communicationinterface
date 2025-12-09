@@ -8,25 +8,23 @@ with open("config.json", "r") as f:
     CONFIG = json.load(f)
     COMMANDS = CONFIG["commands"]
 
-
 DEFAULT_PORT = CONFIG["default_port"]
-DEFAULT_BAUNDRATE = CONFIG["default_baundrate"]
+DEFAULT_BAUDRATE = CONFIG["default_baudrate"]
 
-PACKAGE_PREFIX = CONFIG["package_settings"]["prefix"]
-PACKAGE_SUBFIX = CONFIG["package_settings"]["subfix"]
+PACKAGE_HEADER = CONFIG["package_settings"]["header"].encode('latin-1')
+PACKAGE_FOOTER = CONFIG["package_settings"]["footer"].encode('latin-1')
 PACKAGE_LENGTH = CONFIG["package_settings"]["length"]
 
 read_packages = []
 is_serial_running = False
 ser = None
 
-
 def find_command_name(trigger):
     for cmd in COMMANDS:
         if (COMMANDS[cmd]["trigger"] == trigger):
             return cmd
 def send_serial_package(msg):
-    package = b'\xff' + msg.encode('utf-8') + b'\r\n'
+    package = PACKAGE_HEADER + msg.encode('utf-8') + PACKAGE_FOOTER
     ser.write(package)
 
 def read_serial_package():
@@ -37,19 +35,21 @@ def read_serial_package():
     while is_serial_running:
         byte = ser.read(1)
         if byte:
-            if byte == b'\xff':
+            if byte == PACKAGE_HEADER:
                 packet_buffer = bytearray(byte)
                 is_collecting = True 
             elif is_collecting:
                 packet_buffer += byte
-                if packet_buffer.endswith(b'\r\n'):                    
-                    if len(packet_buffer) <= 16:
+                if packet_buffer.endswith(PACKAGE_FOOTER):           
+                    if len(packet_buffer) <= PACKAGE_LENGTH:
                         raw_payload = packet_buffer[1:-2]
                         decoded_data = raw_payload.decode('utf-8')
 
                         read_packages.append((decoded_data, time.time()))
+                        print(decoded_data)
+                        print("> ")
                     is_collecting = False
-                    packet_buffer = bytearray()                
+                    packet_buffer = bytearray()
                 elif len(packet_buffer) > 16:
                     is_collecting = False
                     packet_buffer = bytearray()
@@ -66,6 +66,10 @@ def run_interface():
         command = splited_code[0]
         command_name = find_command_name(command)
 
+        if not command_name: 
+            print("Enter a valid command.")
+            continue
+
         args = splited_code[1:]
         
         if (COMMANDS[command_name]["min_args"] > len(args)):
@@ -74,11 +78,11 @@ def run_interface():
 
         if (command == COMMANDS["start_serial"]["trigger"]):
             if (len(args) == 0): 
-                ser = serial.Serial(DEFAULT_PORT, DEFAULT_BAUNDRATE)
-                print(f"Serial begin at {DEFAULT_PORT} in {DEFAULT_BAUNDRATE}!")
+                ser = serial.Serial(DEFAULT_PORT, DEFAULT_BAUDRATE)
+                print(f"Serial begin at {DEFAULT_PORT} in {DEFAULT_BAUDRATE}!")
             elif (len(args) == 1):
-                ser = serial.Serial(args[0], DEFAULT_BAUNDRATE)
-                print(f"Serial begin at {args[0]} in {DEFAULT_BAUNDRATE}!")
+                ser = serial.Serial(args[0], DEFAULT_BAUDRATE)
+                print(f"Serial begin at {args[0]} in {DEFAULT_BAUDRATE}!")
             elif (len(args) >= 2):
                 ser = serial.Serial(args[0], int(args[1]))
                 print(f"Serial begin at {args[0]} in {args[1]}!")
@@ -90,10 +94,10 @@ def run_interface():
             if (len(read_packages) > 0):
                 print(f"Data: {read_packages[-1][0]} Acquire Time: {read_packages[-1][1]}")
             else:
-                print("There isn't any packages read recently.")
+                print(COMMANDS["read"]["responses"]["no_recent_package"])
         elif (command == COMMANDS["write"]["trigger"]):
             send_serial_package(args[0])
-            print("The message's writen successfully!")
+            print(COMMANDS["write"]["responses"]["written_succsessful"])
         elif (command == COMMANDS["read_save"]["trigger"]):
             with open("data.json", "r") as f:
                 data_json = json.load(f)
@@ -154,9 +158,9 @@ def run_interface():
             for cmd in COMMANDS:
                 print(f"{COMMANDS[cmd]["trigger"]}: {COMMANDS[cmd]["description"]} Usage: {COMMANDS[cmd]["usage"]}")
         elif (command == COMMANDS["close"]["trigger"]):
-            is_serial_running = False
-            ser.close()
-
+            if (ser != None):
+                is_serial_running = False
+                ser.close()
             break
 
 run_interface()
